@@ -1,0 +1,33 @@
+{% extends 'index.html' %} {% block content %}
+<form method="post" class="email-form">
+  <h1>Entre no Chat Online</h1>
+  <h2>Insira um e-mail válido para entrar no aplicativo</h2>
+  <div>
+    <label>E-Mail:</label>
+    <input
+      type="email"
+      placeholder="Escolha um e-mail"
+      name="email"
+      value="{{email}}"
+      required
+    />
+    <label>Nome</label>
+    <input
+      type="text"
+      placeholder="Escolha um nome"
+      name="userName"
+      value="{{userName}}"
+      required
+    />
+    <label>Cidade</label>
+    <input
+      type="text"
+      placeholder="Escolha uma cidade"
+      name="city"
+      value="{{city}}"
+      required
+    />
+  </div>
+  <button type="submit" name="create" class="create-btn">Entrar</button>
+</form>
+{% endblock %}
