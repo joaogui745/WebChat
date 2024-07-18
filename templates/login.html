@@ -1,10 +1,15 @@
 {% extends 'index.html' %} {% block content %}
+<header>
+  <div class="caixa">   
+      <h1>Entre no Chat Online</h1>
+  </div>
+</header>
 <form method="post" class="email-form">
-  <h1>Entre no Chat Online</h1>
-  <h2>Insira um e-mail válido para entrar no aplicativo</h2>
+  <h2 class="titulo-principal">Insira um e-mail válido para entrar no aplicativo</h2>
   <div>
-    <label>E-Mail:</label>
+    <label >E-Mail:</label>
     <input
+      class="input-padrao"
       type="email"
       placeholder="Escolha um e-mail"
       name="email"
@@ -13,6 +18,7 @@
     />
     <label>Nome</label>
     <input
+      class="input-padrao"
       type="text"
       placeholder="Escolha um nome"
       name="userName"
@@ -21,6 +27,7 @@
     />
     <label>Cidade</label>
     <input
+      class="input-padrao"
       type="text"
       placeholder="Escolha uma cidade"
       name="city"
