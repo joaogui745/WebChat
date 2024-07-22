@@ -1,6 +1,6 @@
 {% extends 'index.html' %} {% block content %}
 <h1>Bem-vindo {{name}}</h1>
-<h2>Criar uma novo grupo:</h2>
+<h2>Criar um novo grupo:</h2>
 <div>
   <form method="post" class="create-room-form">
     <label>Nome único do grupo:</label>
@@ -20,6 +20,10 @@
   {% endif %}
 </div>
 <h2>As salas disponíveis estão abaixo:</h2>
-<div class="groups" id="groups"></div>
+<div class="groups" id="groups">
+    <ul>
+    <li> meu nome é joao </li>
+    </ul>
+</div>
 
 {% endblock %}

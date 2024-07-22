@@ -32,7 +32,7 @@ def lobby():
 
         return redirect(url_for('grupo'))
 
-    return render_template('lobby.html', userName=session['userName'])
+    return render_template('lobby.html', userName=session['userName'], chats = groups.keys)
 
 @app.route('/grupo')
 def grupo():
