@@ -17,7 +17,7 @@ header{
     position: relative;
     width: 1440px;
 }
-.email-form{
+main{
     box-sizing: border-box;
     border-color: rgb(12, 59, 87);
     border-width: 3px;
@@ -34,8 +34,6 @@ header{
     font-size: 22px;
     font-weight: bold;
     margin-bottom: 30px;
-}
-.email-form div{
 }
 .email-form label{
     display: block;
@@ -65,4 +63,37 @@ header{
     transition: 0.5s all;
     transform: scale(1.05);
     cursor: pointer;
+}
+.create-room-form{
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+.create-room-form label{
+    margin: 20px 5px;
+}
+.create-room-form input{
+    font-size: 16px;
+}
+.create-room-form button{
+    display: block;
+    margin: 25px auto;
+    width: 20%;
+    padding: 10px 0;
+    background: #1e1763;
+    color:rgb(255, 253, 240);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+}
+.create-room-form button:hover{
+    background: #051453;
+    transition: 0.5s all;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.titulo-grupo{
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 30px;
 }
