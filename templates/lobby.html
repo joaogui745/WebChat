@@ -21,9 +21,11 @@
 </div>
 <h2>As salas disponíveis estão abaixo:</h2>
 <div class="groups" id="groups">
-    <ul>
-    <li> meu nome é joao </li>
-    </ul>
+<ul>
+  {% for chat in chats %}
+  <li>{{chat}}</li>
+  {% endfor %}
+</ul>
 </div>
 
 {% endblock %}

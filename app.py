@@ -7,6 +7,7 @@ socketio = SocketIO(app)
 
 groups = {}
 
+
 @app.route('/', methods=['POST', 'GET'])
 def login():
     session.clear()
@@ -32,13 +33,13 @@ def lobby():
 
         return redirect(url_for('grupo'))
 
-    return render_template('lobby.html', userName=session['userName'], chats = groups.keys)
+    return render_template('lobby.html', userName=session['userName'], chats = list(groups.keys()))
 
 @app.route('/grupo')
 def grupo():
     if session is None:
         return redirect(url_for("login"))
-    
+
     return render_template('grupo.html', groupName = session['groupName'])
 
 @socketio.on("connect")
@@ -87,4 +88,4 @@ def message(data):
     print(f"{session.get('userName')} said: {data['data']} [chat = {groupName}]")
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0',  port=5000)
+    socketio.run(app, debug=True)
