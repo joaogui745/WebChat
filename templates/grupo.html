@@ -24,6 +24,7 @@
           <input onclick="sendFile()" type=submit value="Enviar arquivo">
         </form>
       </div>
+      <form method="post" id="users"></form>
     </div>
 </div>
 
@@ -31,6 +32,7 @@
   var socketio = io();
 
   const messages = document.getElementById("messages");
+  const users = document.getElementById("users");
 
   const createMessage = (name, msg, isFile) => {
     date = new Date();
@@ -68,6 +70,12 @@
     messages.innerHTML += isFile ? contentFile : content;
   };
 
+  const createUser = (userName, userMail) => {
+    const userData = `
+      <p> ${userName} <button type="submit" name="profile" value="${userMail}"> Perfil </button> </p>`;
+    users.innerHTML += userData;
+  }
+
   const sendMessage = () => {
     const message = document.getElementById("message");
     if (message.value == "") return;
@@ -88,6 +96,14 @@
     console.log("aaa");
     createMessage(data.userName, data.message, data.isFile);
   });
+
+  socketio.on("userUpdate", (userData) => {
+    users.innerHTML = ``
+    for (const key in userData){
+        createUser(userData[key]["userName"], key)
+    }
+  })
+
 </script>
 
 {% for msg in messages %}

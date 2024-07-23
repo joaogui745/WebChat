@@ -49,7 +49,7 @@ def lobby():
             session['groupName'] = groupName
             if groupName in groups:
                 return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe')
-            groups[session['groupName']] = {"members": 0, "messages": []}
+            groups[session['groupName']] = {"members": {}, "messages": []}
         
         elif "join-group" in request.form:
             session["groupName"] = request.form.get("join-group")
@@ -60,27 +60,44 @@ def lobby():
 
 @app.route('/grupo', methods=['GET', 'POST'])
 def grupo():
-    if session is None:
+    if session is None or session["groupName"] not in groups:
         return redirect(url_for("login"))
     
     if request.method == 'POST':
-            if 'file' not in request.files:
-                flash('No file part')
-                return redirect(request.url)
-            file = request.files['file']
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        if "profile" in request.form:
+            session["lookupProfile"] = request.form.get("profile")
+            return redirect(url_for("profile"))
+        else:
+                if 'file' not in request.files:
+                    flash('No file part')
+                    return redirect(request.url)
+                file = request.files['file']
+                if file.filename == '':
+                    flash('No selected file')
+                    return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     else:
         return render_template('grupo.html', groupName = session['groupName'])
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    profile = session["lookupProfile"]
+    groupName = session["groupName"]
+    if profile == session["email"]:
+        return render_template("profile.html", name=session["userName"], email=profile, city= session["city"])
+    else:
+        return render_template("profile.html", name=groups[groupName]["members"][profile]["userName"], email=profile,
+                               city =  groups[groupName]["members"][profile]["userCity"])
 
 @socketio.on("connect")
 def connect():
     groupName = session.get("groupName")
     userName = session.get("userName")
+    userMail = session.get("email")
+    userCity = session.get("city")
+
     if not groupName or not userName:
         return
     if groupName not in groups:
@@ -89,21 +106,29 @@ def connect():
     
     join_room(groupName)
     send({"userName": userName, "message": "entrou no grupo"}, to=groupName)
-    groups[groupName]["members"] += 1
+    groups[groupName]["members"][userMail] = {"userName" : userName, "userCity" : userCity}
+    emit("userUpdate", groups[groupName]["members"] , to=groupName)
     print(f"{userName} entrou no grupo {groupName}")
 
 @socketio.on("disconnect")
 def disconnect():
     groupName = session.get("groupName")
     userName = session.get("userName")
+    userMail = session.get("email")
     leave_room(groupName)
 
-    if groupName in groups:
-        groups[groupName]["members"] -= 1
-        if groups[groupName]["members"] <= 0:
+    print(userMail)
+    print(groups[groupName]["members"])
+
+
+    if groupName in groups: 
+        if userMail in groups[groupName]["members"]:
+            del groups[groupName]["members"][userMail]
+        if len(groups[groupName]["members"]) <= 0:
             del groups[groupName]
     
     send({"userName": userName, "message": "saiu do grupo"}, to=groupName)
+    emit("userUpdate", groups[groupName]["members"] , to=groupName)
     print(f"{userName} saiu do grupo {groupName}")
 
 @socketio.on("message")
