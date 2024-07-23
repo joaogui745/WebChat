@@ -1,31 +1,36 @@
 {% extends 'index.html' %} {% block content %}
-<h1>Bem-vindo {{name}}</h1>
-<h2>Criar um novo grupo:</h2>
-<div>
-  <form method="post" class="create-room-form">
-    <label>Nome único do grupo:</label>
-    <input
+<header>
+  <div class="caixa">   
+      <h1>Bem-Vindo</h1>
+  </div>
+</header>
+<main>
+  <h2 class="titulo-principal">Criar um novo grupo:</h2>
+  <div>
+    <form method="post" class="create-room-form">
+      <label>Nome único do grupo:</label>
+      <input
       type="text"
       placeholder="Escolha um nome de grupo"
       name="groupName"
       value="{{groupName}}"
       required
-    />
-    <button type="submit" name="create-group">Criar</button>
-  </form>
-  {% if error %}
-  <ul>
-    <li>{{error}}</li>
-  </ul>
-  {% endif %}
-</div>
-<h2>As salas disponíveis estão abaixo:</h2>
-<div class="groups" id="groups">
-<ul>
-  {% for chat in chats %}
-  <li>{{chat}}</li>
-  {% endfor %}
-</ul>
-</div>
-
+      />
+      <button type="submit" name="create-group">Criar</button>
+    </form>
+    {% if error %}
+    <ul>
+      <li>{{error}}</li>
+    </ul>
+    {% endif %}
+  </div>
+  <h2 class="titulo-grupo">As salas disponíveis estão abaixo:</h2>
+  <div class="groups" id="groups">
+    <ul>
+      {% for chat in chats %}
+      <li>{{chat}}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</main>
 {% endblock %}
