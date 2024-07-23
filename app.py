@@ -44,14 +44,16 @@ def downloadFile():
 @app.route('/lobby', methods=['POST', 'GET'])
 def lobby():
     if request.method == 'POST':
-        groupName = request.form.get('groupName')
-        session['groupName'] = groupName
-
-        if groupName in groups:
-            return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe')
-
-        groups[session['groupName']] = {"members": 0, "messages": []}
-
+        if "create-group" in request.form:
+            groupName = request.form.get('groupName')
+            session['groupName'] = groupName
+            if groupName in groups:
+                return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe')
+            groups[session['groupName']] = {"members": 0, "messages": []}
+        
+        elif "join-group" in request.form:
+            session["groupName"] = request.form.get("join-group")
+        
         return redirect(url_for('grupo'))
 
     return render_template('lobby.html', userName=session['userName'], chats = list(groups.keys()))

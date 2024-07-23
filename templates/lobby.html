@@ -26,11 +26,11 @@
   </div>
   <h2 class="titulo-grupo">As salas disponíveis estão abaixo:</h2>
   <div class="groups" id="groups">
-    <ul>
+    <form method="post">
       {% for chat in chats %}
-      <li>{{chat}}</li>
+      <p>{{chat}} <button type="submit" name="join-group" value="{{chat}}">Entrar</button></p>
       {% endfor %}
-    </ul>
+    </form>
   </div>
 </main>
 {% endblock %}
