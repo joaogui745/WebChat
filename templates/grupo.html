@@ -1,19 +1,30 @@
 {% extends 'index.html' %} {% block content %}
-<div class="message-box">
-  <h2>{{groupName}}</h2>
-  <div class="messages" id="messages"></div>
-  <div class="inputs">
-    <input
-      type="text"
-      rows="3"
-      placeholder="Message"
-      name="message"
-      id="message"
-    />
-    <button type="button" name="send" id="send-btn" onClick="sendMessage()">
-      Send
-    </button>
-  </div>
+<div class="email-box">
+    <div class="group-name">
+      <h1 >{{groupName}}</h1>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="chat-control">
+      <div class="control">
+        <input
+        type="text"
+        rows="3"
+        placeholder="Message"
+        name="message"
+        id="message"
+        />
+        <button type="button" name="send" id="send-btn" onClick="sendMessage()">
+          Enviar mensagem
+        </button>
+      </div>
+      <div class="control">
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <form method=post enctype=multipart/form-data target="dummyframe">
+          <input id="file" type=file name=file>
+          <input onclick="sendFile()" type=submit value="Enviar arquivo">
+        </form>
+      </div>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -21,33 +32,61 @@
 
   const messages = document.getElementById("messages");
 
-  const createMessage = (name, msg) => {
+  const createMessage = (name, msg, isFile) => {
     date = new Date();
+
     const content = `
-    <div class="text">
-        <span>
-            <strong>${name}</strong>: ${msg}
-        </span>
-        <span class="muted">
-            ${date.getHours().toLocaleString()}:${date
+        <div class="message-line">
+            <span class="message-content">
+                <strong>${name}</strong>: ${msg}
+            </span>
+            <span class="message-date">
+                ${date.getHours().toLocaleString()}:${date
       .getMinutes()
       .toLocaleString()}
-        </span>
-    </div>
+            </span>
+        </div>
     `;
-    messages.innerHTML += content;
+
+    const contentFile = `
+         <div class="message-line">
+            <span class="message-content">
+                <strong>${name}</strong>: 
+            </span>
+            <a target="_blank" href="/downloads?fileName=${msg}">
+              ${msg}
+            </a>
+            <span class="message-date">
+                ${date.getHours().toLocaleString()}:${date
+      .getMinutes()
+      .toLocaleString()}
+            </span>
+        </div>
+    `;
+
+    console.log(contentFile);
+    messages.innerHTML += isFile ? contentFile : content;
   };
 
   const sendMessage = () => {
     const message = document.getElementById("message");
     if (message.value == "") return;
-    socketio.emit("message", { data: message.value });
+    socketio.emit("message", { data: [message.value, false] });
     message.value = "";
   };
 
-  socketio.on("message", (data) => {
+  const sendFile = () => {
+    var message = document.getElementById("file");
+    message = message.value.split("\\").at(-1).replace(" ", "_").replace("(", "").replace(")", "")
+
+    if (message == "") return;
+    console.log(message)
+    socketio.emit("message", { data: [message, true] });
+  };
+
+  socketio.on("message", (data, isFile) => {
     console.log("aaa");
-    createMessage(data.userName, data.message);
+    createMessage(data.userName, data.message, data.isFile);
   });
 </script>
 

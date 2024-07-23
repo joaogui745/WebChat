@@ -1,12 +1,26 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+import os
+import pathlib
+
+from flask import (Flask, flash, redirect, render_template, request, send_file,
+                   session, url_for)
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms, send
+from werkzeug.utils import secure_filename
+
+path = pathlib.Path(__file__).parent.resolve()
+UPLOAD_FOLDER = path / "files"
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'mp3'}
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcd'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 socketio = SocketIO(app)
 
 groups = {}
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['POST', 'GET'])
 def login():
@@ -19,6 +33,13 @@ def login():
         return redirect(url_for('lobby'))
 
     return render_template('login.html')
+
+@app.route('/downloads')
+def downloadFile():
+    fileName = request.args.get('fileName')
+    path = pathlib.Path(__file__).parent.resolve()
+    print(path / "files" / fileName)
+    return send_file(path / "files" / fileName, as_attachment=True)
 
 @app.route('/lobby', methods=['POST', 'GET'])
 def lobby():
@@ -35,12 +56,24 @@ def lobby():
 
     return render_template('lobby.html', userName=session['userName'], chats = list(groups.keys()))
 
-@app.route('/grupo')
+@app.route('/grupo', methods=['GET', 'POST'])
 def grupo():
     if session is None:
         return redirect(url_for("login"))
-
-    return render_template('grupo.html', groupName = session['groupName'])
+    
+    if request.method == 'POST':
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files['file']
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    else:
+        return render_template('grupo.html', groupName = session['groupName'])
 
 @socketio.on("connect")
 def connect():
@@ -81,7 +114,8 @@ def message(data):
     
     content = {
         "userName": session.get("userName"),
-        "message": data["data"]
+        "message": data["data"][0],
+        "isFile": data["data"][1]
     }
     send(content, to=groupName)
     groups[groupName]["messages"].append(content)
