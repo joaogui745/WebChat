@@ -48,7 +48,7 @@ def lobby():
             groupName = request.form.get('groupName')
             session['groupName'] = groupName
             if groupName in groups:
-                return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe')
+                return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe', chats = list(groups.keys()))
             groups[session['groupName']] = {"members": {}, "messages": []}
         
         elif "join-group" in request.form:
