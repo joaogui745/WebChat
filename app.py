@@ -1,6 +1,7 @@
 import os
 import pathlib
 
+
 from flask import (Flask, flash, redirect, render_template, request, send_file,
                    session, url_for)
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms, send
@@ -14,9 +15,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcd'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, manage_session=False)
 
 groups = {}
+users = {}
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -49,10 +51,10 @@ def lobby():
             session['groupName'] = groupName
             if groupName in groups:
                 return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe', chats = list(groups.keys()))
-            groups[session['groupName']] = {"members": {}, "messages": []}
+            groups[session['groupName']] = {"members": {}, "messages": [], "admin" : session["email"]}
         
-        elif "join-group" in request.form:
-            session["groupName"] = request.form.get("join-group")
+        #elif "join-group" in request.form:
+            #session["groupName"] = request.form.get("join-group")
         
         return redirect(url_for('grupo'))
 
@@ -60,6 +62,8 @@ def lobby():
 
 @app.route('/grupo', methods=['GET', 'POST'])
 def grupo():
+    if "groupName" not in session:
+        session["groupName"] = users[session["email"]]
     if session is None or session["groupName"] not in groups:
         return redirect(url_for("login"))
     
@@ -91,7 +95,7 @@ def profile():
         return render_template("profile.html", name=groups[groupName]["members"][profile]["userName"], email=profile,
                                city =  groups[groupName]["members"][profile]["userCity"])
 
-@socketio.on("connect")
+@socketio.on("connect", namespace="/chat/messages")
 def connect():
     groupName = session.get("groupName")
     userName = session.get("userName")
@@ -104,13 +108,15 @@ def connect():
         leave_room(groupName)
         return
     
+    if session["email"] == groups[groupName]["admin"]:
+        join_room(session["email"])
     join_room(groupName)
     send({"userName": userName, "message": "entrou no grupo"}, to=groupName)
     groups[groupName]["members"][userMail] = {"userName" : userName, "userCity" : userCity}
     emit("userUpdate", groups[groupName]["members"] , to=groupName)
     print(f"{userName} entrou no grupo {groupName}")
 
-@socketio.on("disconnect")
+@socketio.on("disconnect", namespace="/chat/messages")
 def disconnect():
     groupName = session.get("groupName")
     userName = session.get("userName")
@@ -131,7 +137,7 @@ def disconnect():
     emit("userUpdate", groups[groupName]["members"] , to=groupName)
     print(f"{userName} saiu do grupo {groupName}")
 
-@socketio.on("message")
+@socketio.on("message", namespace="/chat/messages")
 def message(data):
     
     groupName = session.get("groupName")
@@ -147,6 +153,22 @@ def message(data):
     send(content, to=groupName)
     groups[groupName]["messages"].append(content)
     print(f"{session.get('userName')} said: {data['data']} [chat = {groupName}]")
+
+
+@socketio.on("peerRequest", namespace="/chat/request")
+def peerRequest(data):
+    join_room(session["email"])
+    users[session["email"]] = data["group"]
+    emit('adminRequest', {"name" : session["userName"], "email": session["email"], "group" : data["group"]}, to=groups[data["group"]]["admin"], namespace="/chat/messages")
+
+@socketio.on("adminResponse", namespace="/chat/messages")
+def adminResponse(data):
+    session["groupName"] = data["group"]
+    emit("peerAction", {"response" : data["response"], "group": data["group"], "url" : url_for("grupo")}, to=data["email"], namespace="/chat/request")
+
+
+
+    
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
