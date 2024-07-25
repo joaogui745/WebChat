@@ -38,5 +38,10 @@
     </div>
     <button type="submit" name="create" class="create-btn">Entrar</button>
   </form>
+  <ul>
+    {% if error%}
+    <li>{{error}}</li>
+    {% endif %}
+  </ul>
 </main>
 {% endblock %}

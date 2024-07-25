@@ -52,6 +52,15 @@
     }
   })
 
+  socket.on("groupUpdate", (data) => {
+    const groupList = document.getElementById("groups") 
+    groupList.innerHTML = ``
+    for (i in data.groups){
+      groupList.innerHTML += `<p>${data.groups[i]} <button type="button" id="${data.groups[i]}" onClick="sendRequest(this)">Entrar</button></p>`
+    }
+    console.log(data)
+  })
+
 </script>
 
 

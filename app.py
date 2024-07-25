@@ -32,6 +32,11 @@ def login():
         session['userName'] = request.form.get('userName')
         session['city'] = request.form.get('city')
 
+        if session["email"] in users:
+            return render_template('login.html', error="Este email já está em uso", userName=session["userName"], city=session["city"])
+        else:
+            users[session["email"]] = None;
+
         return redirect(url_for('lobby'))
 
     return render_template('login.html')
@@ -52,12 +57,10 @@ def lobby():
             if groupName in groups:
                 return render_template('lobby.html', userName=session['userName'], error='Uma sala com este nome já existe', chats = list(groups.keys()))
             groups[session['groupName']] = {"members": {}, "messages": [], "admin" : session["email"]}
+            emit("groupUpdate", {"groups" : list(groups.keys())}, to="lobby",namespace="/chat/request")
         
-        #elif "join-group" in request.form:
-            #session["groupName"] = request.form.get("join-group")
         
         return redirect(url_for('grupo'))
-
     return render_template('lobby.html', userName=session['userName'], chats = list(groups.keys()))
 
 @app.route('/grupo', methods=['GET', 'POST'])
@@ -116,6 +119,14 @@ def connect():
     emit("userUpdate", groups[groupName]["members"] , to=groupName)
     print(f"{userName} entrou no grupo {groupName}")
 
+@socketio.on("connect", namespace="/chat/request")
+def connect():
+    join_room("lobby")
+    print("Estou no lobby")
+
+
+
+
 @socketio.on("disconnect", namespace="/chat/messages")
 def disconnect():
     groupName = session.get("groupName")
@@ -132,9 +143,11 @@ def disconnect():
             del groups[groupName]["members"][userMail]
         if len(groups[groupName]["members"]) <= 0:
             del groups[groupName]
+            emit("groupUpdate", {"groups" : list(groups.keys())}, to="lobby",namespace="/chat/request")
     
     send({"userName": userName, "message": "saiu do grupo"}, to=groupName)
-    emit("userUpdate", groups[groupName]["members"] , to=groupName)
+    if session["groupName"] in groups:
+        emit("userUpdate", groups[groupName]["members"] , to=groupName)
     print(f"{userName} saiu do grupo {groupName}")
 
 @socketio.on("message", namespace="/chat/messages")
