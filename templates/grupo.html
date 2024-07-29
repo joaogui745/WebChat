@@ -13,15 +13,15 @@
         name="message"
         id="message"
         />
-        <button type="button" name="send" id="send-btn" onClick="sendMessage()">
+        <button class="message-button" type="button" name="send" id="send-btn" onClick="sendMessage()">
           Enviar mensagem
         </button>
       </div>
       <div class="control">
         <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
         <form method=post enctype=multipart/form-data target="dummyframe">
-          <input id="file" type=file name=file>
-          <input onclick="sendFile()" type=submit value="Enviar arquivo">
+          <input class="file-form" id="file" type=file name=file>
+          <input class="file-button" onclick="sendFile()" type=submit value="Enviar arquivo">
         </form>
       </div>
       <form method="post" id="users"></form>
@@ -72,7 +72,7 @@
 
   const createUser = (userName, userMail) => {
     const userData = `
-      <p> ${userName} <button type="submit" name="profile" value="${userMail}"> Perfil </button> </p>`;
+      <p> ${userName} <button class="perfil-button" type="submit" name="profile" value="${userMail}"> Perfil </button> </p>`;
     users.innerHTML += userData;
   }
 

@@ -101,7 +101,27 @@ main {
   margin-top: 25px;
   font-size: 20px;
 }
-
+.groups p:not(button){
+  color: rgb(14 30 86);
+  margin-top: 10px;
+}
+.join-group{
+  margin-left: 15px;
+  width: 10%;
+  padding: 7px;
+  background: #1e1763;
+  color: rgba(255, 253, 240, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+}
+.join-group:hover {
+  background: #051453;
+  transition: 0.5s all;
+  transform: scale(1.05);
+  cursor: pointer;
+}
 .email-box {
   box-sizing: border-box;
   border-color: rgb(12, 59, 87);
@@ -109,7 +129,7 @@ main {
   border-style: solid;
   border-radius: 15px;
   position: relative;
-  width: 720px;
+  width: 840px;
   margin: 40px auto;
   padding: 50px;
   display: flex;
@@ -122,7 +142,7 @@ main {
   text-align: center;
   font-weight: 800;
   font-size: xx-large;
-  margin-bottom: 50px;
+  margin: 40px auto;
 }
 
 .chat-control {
@@ -161,4 +181,53 @@ main {
 .message-date {
   margin-left: auto;
   font-size: small;
+}
+.message-button{
+  margin: 8px auto 0;
+  width: 60%;
+  padding: 10px 0px;
+  background: #1e1763;
+  color: rgb(255, 253, 240, 0.97);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 17px;
+}
+.message-button:hover {
+  background: #051453;
+  transition: 0.5s all;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+.control input:last-child{
+  margin: 17px auto 0;
+  padding: 10px 0px;
+  background: #1e1763;
+  color: rgb(255, 253, 240, 0.97);
+  font-weight: 600;
+  border: none;
+  border-radius: 17px;
+}
+.file-button:hover {
+  background: #051453;
+  transition: 0.5s all;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+.perfil-button{
+  margin: 2px;
+  width: 60%;
+  padding: 4px 0px;
+  background: #1e1763;
+  color: rgb(255, 253, 240, 0.97);
+  font-size: 11px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+}
+.perfil-button:hover {
+  background: #051453;
+  transition: 0.5s all;
+  transform: scale(1.05);
+  cursor: pointer;
 }

@@ -28,7 +28,7 @@
   <div class="groups" id="groups">
     <form method="post">
       {% for chat in chats %}
-      <p>{{chat}} <button type="submit" name="join-group" value="{{chat}}">Entrar</button></p>
+      <p>{{chat}} <button class="join-group" type="submit" name="join-group" value="{{chat}}">Entrar</button></p>
       {% endfor %}
     </form>
   </div>
