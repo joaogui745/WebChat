@@ -26,11 +26,42 @@
   </div>
   <h2 class="titulo-grupo">As salas disponíveis estão abaixo:</h2>
   <div class="groups" id="groups">
-    <form method="post">
       {% for chat in chats %}
       <p>{{chat}} <button class="join-group" type="submit" name="join-group" value="{{chat}}">Entrar</button></p>
       {% endfor %}
-    </form>
   </div>
+  <div id="groupResponse"> </div>
 </main>
+
+<script type="text/javascript">
+
+  const socket = io("/chat/request");
+  const message = document.getElementById("groupResponse")
+
+  const sendRequest = (button) => {
+    button.disabled = true;
+    socket.emit("peerRequest", {"group": button.id})
+  }
+
+  socket.on("peerAction", (data) => {
+    if (data.response == "False"){
+      message.innerHTML = `Você não foi aceito(a) no grupo ${data.group}`;}
+    else{
+      window.location.href = data.url;
+      
+    }
+  })
+
+  socket.on("groupUpdate", (data) => {
+    const groupList = document.getElementById("groups") 
+    groupList.innerHTML = ``
+    for (i in data.groups){
+      groupList.innerHTML += `<p>${data.groups[i]} <button type="button" id="${data.groups[i]}" onClick="sendRequest(this)">Entrar</button></p>`
+    }
+    console.log(data)
+  })
+
+</script>
+
+
 {% endblock %}

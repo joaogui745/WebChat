@@ -29,8 +29,9 @@
 </div>
 
 <script type="text/javascript">
-  var socketio = io();
+  var socketio = io('/chat/messages');
 
+  const userData = {};
   const messages = document.getElementById("messages");
   const users = document.getElementById("users");
 
@@ -101,8 +102,31 @@
     users.innerHTML = ``
     for (const key in userData){
         createUser(userData[key]["userName"], key)
-    }
+    };
   })
+
+  socketio.on("adminRequest", (data) => {
+    userData.email = data.email;
+    userData.group = data.group;
+    messages.innerHTML += `<div id="conectionRequest">
+  ${data.name} deseja entrar <button id="True" onClick="adminChoice(this)"> sim </button> <button id="False" onClick="adminChoice(this)"> não </button>
+    </div>`;
+  })
+
+  const adminChoice = (button) =>{
+    const response = button.id;
+    const email = userData.email;
+    const group = userData.group;
+    requestdiv = messages.children[messages.childElementCount - 1]
+    const btn1 = requestdiv.children[0];
+    const btn2 = requestdiv.children[1];
+    console.log(btn1)
+    console.log(btn2)
+    btn1.disabled = true;
+    btn2.disabled = true;
+    
+    socketio.emit("adminResponse", {response, email, group});
+  }
 
 </script>
 
