@@ -13,7 +13,7 @@
         name="message"
         id="message"
         />
-        <button type="button" name="send" id="send-btn" onClick="sendMessage()">
+        <button class="message-button" type="button" name="send" id="send-btn" onClick="sendMessage()">
           Enviar mensagem
         </button>
       </div>
@@ -21,7 +21,7 @@
         <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
         <form method=post enctype=multipart/form-data target="dummyframe">
           <input id="file" type=file name=file>
-          <input onclick="sendFile()" type=submit value="Enviar arquivo">
+          <input class="file-button" onclick="sendFile()" type=submit value="Enviar arquivo">
         </form>
       </div>
       <form method="post" id="users"></form>
@@ -73,7 +73,7 @@
 
   const createUser = (userName, userMail) => {
     const userData = `
-      <p> ${userName} <button type="submit" name="profile" value="${userMail}"> Perfil </button> </p>`;
+      <p> ${userName} <button class="perfil-button" type="submit" name="profile" value="${userMail}"> Perfil </button> </p>`;
     users.innerHTML += userData;
   }
 
@@ -109,7 +109,7 @@
     userData.email = data.email;
     userData.group = data.group;
     messages.innerHTML += `<div id="conectionRequest">
-  ${data.name} deseja entrar <button id="True" onClick="adminChoice(this)"> sim </button> <button id="False" onClick="adminChoice(this)"> não </button>
+  ${data.name} deseja entrar <button class="aceitar-btn" id="True" onClick="adminChoice(this)"> sim </button> <button class="recusar-btn" id="False" onClick="adminChoice(this)"> não </button>
     </div>`;
   })
 
