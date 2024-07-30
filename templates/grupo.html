@@ -20,7 +20,7 @@
       <div class="control">
         <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
         <form method=post enctype=multipart/form-data target="dummyframe">
-          <input class="file-form" id="file" type=file name=file>
+          <input id="file" type=file name=file>
           <input class="file-button" onclick="sendFile()" type=submit value="Enviar arquivo">
         </form>
       </div>
@@ -109,7 +109,7 @@
     userData.email = data.email;
     userData.group = data.group;
     messages.innerHTML += `<div id="conectionRequest">
-  ${data.name} deseja entrar <button id="True" onClick="adminChoice(this)"> sim </button> <button id="False" onClick="adminChoice(this)"> não </button>
+  ${data.name} deseja entrar <button class="aceitar-btn" id="True" onClick="adminChoice(this)"> sim </button> <button class="recusar-btn" id="False" onClick="adminChoice(this)"> não </button>
     </div>`;
   })
 
